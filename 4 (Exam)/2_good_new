@@ -1,0 +1,9 @@
+n = int(input())
+
+sequence = list(map(int, input().split()))
+min_removals = 0
+
+for element in sequence:
+    if sequence.count(element) > element:
+        min_removals += 1
+print(min_removals)

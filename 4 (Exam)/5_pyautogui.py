@@ -1,15 +1,9 @@
 import pyautogui
+from time import sleep
+s = int(input())
+sleep(3)
 
-# Read the number from the user
-n = int(input(5))
-
-# Set the initial coordinates
-x, y = 500, 500
-
-# Loop to draw the pyramid
-for i in range(1, n + 1):
-    pyautogui.moveTo(x, y)
-    pyautogui.click()
-    pyautogui.typewrite('#' * i)
-    y -= 20
-    x -= 10
+for i in range(s):
+ for j in range(i+1):
+    pyautogui.write('#', interval=0.25)
+ pyautogui.press('enter')

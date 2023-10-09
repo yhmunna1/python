@@ -14,6 +14,9 @@ class Ride_Sharing:
     def add_driver(self, driver):
         self.drivers.append(driver)
 
+    def __repr__(self) -> str:
+        return f'{self.company_name} with riders: {len(self.riders)} and drivers: {len(self.drivers)}'
+
 
 class User(ABC):
     def __init__(self, name, email, nid) -> None:
@@ -45,12 +48,17 @@ class Rider(User):
     def update_location(self, current_location):
         self.current_location = current_location
 
-    def request_ride(self, destination, location = None):
+    def request_ride(self, ride_sharing, destination):
         if not self.current_ride:
             ride_request = Ride_request(self, destination)
-            ride_matcher = Ride_Matching()
-            
-            self.current_ride = ride_matcher.find_driver(ride_request)
+            ride_matcher = Ride_Matching(ride_sharing.drivers)
+            ride = ride_matcher.find_driver(ride_request)
+            print('got the ride, yay', ride)
+            self.current_ride = ride
+
+    def show_current_ride(self):
+        print(self.current_ride)
+
 
 
 class Driver(User):
@@ -62,7 +70,7 @@ class Driver(User):
     def display_profile(self):
         print(f'Driver Name: {self.name}, Email: {self.email}')
 
-    def accept_rider(self, ride):
+    def accept_ride(self, ride):
         ride.set_driver(self)
 
 class Ride:
@@ -86,6 +94,8 @@ class Ride:
         self.rider.wallet -= self.estimated_fare
         self.driver.wallet += self.estimated_fare
 
+    def __repr__(self) -> str:
+        return f'Ride details. Started: {self.start_location} to {self.end_location}'
 
 class Ride_request:
     def __init__(self, rider, end_location) -> None:
@@ -94,11 +104,12 @@ class Ride_request:
 
 
 class Ride_Matching:
-    def __init__(self) -> None:
-        self.available_drivers = []
+    def __init__(self, drivers) -> None:
+        self.available_drivers = drivers
 
     def find_driver(self, ride_request):
         if len(self.available_drivers) > 0:
+            print('looking for a driver')
             driver = self.available_drivers[0]
             ride = Ride(ride_request.rider.current_location, ride_request.end_location)
             driver.accept_ride(ride)
@@ -135,3 +146,15 @@ class Bike(Vehicle):
 
     def start_drive(self):
         self.status = 'unavailable'
+
+
+niye_jao = Ride_Sharing('Niye Jao')
+sakib = Rider("Sakib Al Hasan", 'sakib75@gmail.com', 75, 'Gulshan-1', 1500)
+niye_jao.add_rider(sakib)
+kala_pakhi = Driver('Kala Pakhi', 'kala@sada.com', 123, 'Mirpur-1')
+
+niye_jao.add_driver(kala_pakhi)
+print(niye_jao)
+
+sakib.request_ride(niye_jao,'uttara')
+sakib.show_current_ride()
